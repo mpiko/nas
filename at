@@ -1,8 +1,19 @@
 #!/bin/bash
+
+# run a command once at a particualar time.
+
+
 IFS="
 "
+
 LOG=$HOME/at/at.log
 REQ=$HOME/at/at.req
+
+# SAMPLE at.req
+#20220807-0105 $HOME/bin/getYoutube
+#20220809-0100 $HOME/bin/getOdooVids
+
+
 NOW=$(date "+%Y%m%d-%H%M")
 
 logheader() {
@@ -18,13 +29,10 @@ do
     WHEN=$(echo $L | cut -c1-13)
     if [ $WHEN == $NOW ]
     then
-	[ $COUNT -lt 1 ] && logheader
+        [ $COUNT -lt 1 ] && logheader
         ((COUNT++))
         COMMAND=$(echo $L | cut -c15-)
         echo "WHEN=$WHEN, COMMAND=$COMMAND" >> $LOG
-	#bash -c "$COMMAND & 2> $HOME/at/${WHEN}-${COUNT}.log"
-	bash -c "$COMMAND &"
-    #else
-        #echo "WHEN=$WHEN, NOW=$NOW NO MATCH" >> $LOG
+        bash -c "$COMMAND &"
     fi
 done
