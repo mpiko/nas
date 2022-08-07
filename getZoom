@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+WD=/common/Software
+
+URLS="https://us06web.zoom.us/client/latest/zoom_amd64.deb"
+
+
+
+[ -d $WD ] || mkdir -p $WD
+
+cd $WD
+
+for URL in $URLS
+do
+    wget $URL
+done

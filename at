@@ -1,0 +1,30 @@
+#!/bin/bash
+IFS="
+"
+LOG=$HOME/at/at.log
+REQ=$HOME/at/at.req
+NOW=$(date "+%Y%m%d-%H%M")
+
+logheader() {
+    echo "----------------------------" >> $LOG
+    echo "$NOW" >> $LOG
+}
+
+COUNT=0
+
+for L in $(cat $REQ)
+do
+    #echo $L
+    WHEN=$(echo $L | cut -c1-13)
+    if [ $WHEN == $NOW ]
+    then
+	[ $COUNT -lt 1 ] && logheader
+        ((COUNT++))
+        COMMAND=$(echo $L | cut -c15-)
+        echo "WHEN=$WHEN, COMMAND=$COMMAND" >> $LOG
+	#bash -c "$COMMAND & 2> $HOME/at/${WHEN}-${COUNT}.log"
+	bash -c "$COMMAND &"
+    #else
+        #echo "WHEN=$WHEN, NOW=$NOW NO MATCH" >> $LOG
+    fi
+done

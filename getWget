@@ -1,0 +1,16 @@
+#!/bin/bash
+
+
+WD=/storage/alexgroup
+URLS="https://www.dropbox.com/sh/wgifzvgfao5r1kv/AACkySG--1gQ64EWXmlydCg0a/Alex%20Group%20Aus%20Price%20Book%202022.pdf"
+
+
+
+[ -d $WD ] || mkdir -p $WD
+
+cd $WD
+
+for URL in $URLS
+do
+    wget $URL
+done

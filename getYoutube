@@ -1,0 +1,23 @@
+#!/bin/bash
+
+SELF=$(basename $0)
+
+WD=/multimedia/Work/Odoo/Project
+LOG=.${SELF}.log
+
+VIDS="https://youtu.be/DPpnmtQRYY8 https://youtu.be/nAatJSiNqp8 https://youtu.be/pfF4aS0a4pU https://youtu.be/Pet5qVSh8xQ https://youtu.be/smUoiTlC9so https://youtu.be/KPcYIT1zUK8 https://youtu.be/RDnrOIDIi0w https://youtu.be/Ld93JW_YHh0 https://youtu.be/OD2tMVtx4ic https://youtu.be/hcvE2Vc41Xs"
+
+[ -d $WD ] || mkdir -p $WD
+
+cd $WD
+
+for VID in $VIDS
+do
+    NOW=$(date "+%Y%m%d-%H%M")
+    echo "-----------------------------" >> $LOG
+    echo "$NOW" >> $LOG
+    echo "VID=$VID" >> $LOG
+    /usr/local/bin/youtube-dl -e $VID >> $LOG
+    /usr/local/bin/youtube-dl --yes-playlist $VID #> /dev/null 2>&1
+done
+

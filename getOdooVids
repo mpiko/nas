@@ -1,0 +1,76 @@
+#!/bin/bash
+
+WD=/multimedia/Work/Odoo/Accounting
+INPUTFILE=~/ac.txt
+
+#-------------------------------------------------------
+# SAMPLE INPUT FILE
+#Accounting Basics
+#https://youtu.be/nmo978Z4KIU
+#https://youtu.be/4wB-MUE8tDg
+#https://youtu.be/IqAKOcdjFPU
+#Invoicing
+#https://youtu.be/_rHf0-kKJMA
+#https://youtu.be/8C06X5pLWag
+#
+# NOTES
+# Lines starting with http are downloaded
+# Lines start with # are ignored
+# Any other line is a directory
+#-------------------------------------------------------
+
+SELF=$(basename $0)
+LOG=.${SELF}.log
+DONE=${INPUTFILE}.done
+
+[ -d "$WD" ] || mkdir -p "$WD"
+
+cd "$WD"
+
+
+COUNT=0
+DIRCOUNT=0
+IFS="
+"
+
+for LINE in $(cat $INPUTFILE)
+do
+    COMMENT=$(echo $LINE | cut -c1)
+    [ "$COMMENT" = "#" ] && continue
+
+    NOW=$(date "+%Y%m%d-%H%M")
+    TIME=$(date "+%H")
+    [ $TIME = "07" ] && exit # bail if its after 6 am.
+
+    BEGIN=$(echo $LINE | cut -c1-4)
+    if [ $BEGIN = "http" ]
+    then
+        ((COUNT++))
+        VID=$LINE 
+        echo "-----------------------------" >> $LOG
+        echo "$NOW" >> $LOG
+        echo "URL=$VID" >> $LOG
+
+        YOUNAME=$(/usr/local/bin/youtube-dl --get-filename $VID)
+        echo "YOUTUBE NAME=$YOUNAME" >> $LOG
+        EXT=${YOUNAME##*.}
+        #echo "EXT = $EXT"
+
+        FILENAME=$(echo $YOUNAME | sed 's/ [_\|] [oO]doo/:/' | cut -f1 -d:)
+        FILENAME="${COUNT}. ${FILENAME}.$EXT"
+        
+        #echo "$FILENAME"
+        echo "NAME=$FILENAME" >> $LOG
+        /usr/local/bin/youtube-dl $VID #> /dev/null 2>&1
+        #echo mv "$YOUNAME" "$FILENAME" 2> mverror.log
+        mv "$YOUNAME" "$FILENAME" #2>> mverror.log
+        #exit
+    else
+        ((DIRCOUNT++))
+        DIR="${WD}/${DIRCOUNT}. ${LINE}"
+        mkdir -p "$DIR"
+        cd "$DIR"
+    fi
+    echo $LINE >> $DONE
+done
+
