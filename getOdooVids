@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WD=/multimedia/Work/Odoo/Accounting
+WD=/multimedia/Work/Odoo/ACMISSED
 INPUTFILE=~/ac.txt
 
 #-------------------------------------------------------
@@ -53,8 +53,9 @@ do
 
         YOUNAME=$(/usr/local/bin/youtube-dl --get-filename $VID)
         echo "YOUTUBE NAME=$YOUNAME" >> $LOG
+        # get the extention and then the name without extention
         EXT=${YOUNAME##*.}
-        #echo "EXT = $EXT"
+        YOUBASE=$(basename $YOUNAME $EXT)
 
         FILENAME=$(echo $YOUNAME | sed 's/ [_\|] [oO]doo/:/' | cut -f1 -d:)
         FILENAME="${COUNT}. ${FILENAME}.$EXT"
@@ -62,9 +63,15 @@ do
         #echo "$FILENAME"
         echo "NAME=$FILENAME" >> $LOG
         /usr/local/bin/youtube-dl $VID #> /dev/null 2>&1
-        #echo mv "$YOUNAME" "$FILENAME" 2> mverror.log
-        mv "$YOUNAME" "$FILENAME" #2>> mverror.log
-        #exit
+        
+        # Rename. If the file cannot be found, leave it alone
+        if [ -e "$YOUNAME" ]
+        then
+            mv "$YOUNAME" "$FILENAME" #2>> mverror.log
+        elif [ -e "{$YOUBASE}.mp4" ]
+        then
+            mv "${YOUBASE}.mp4" "$FILNAME"
+        fi
     else
         ((DIRCOUNT++))
         DIR="${WD}/${DIRCOUNT}. ${LINE}"
